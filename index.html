@@ -1,21 +1,374 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="utf-8" />
-  <title>vpatj-test</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>
+		日本版 VPAT 資料
+	</title>
+	<link rel="shortcut icon" href="https://appservice.azureedge.net/images/app-service/v4/favicon.ico"
+		type="image/x-icon" />
+	<link href="https://appservice.azureedge.net/css/app-service/v4/bootstrap.min.css" rel="stylesheet"
+		crossorigin="anonymous" />
+
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				font-family: Arial, sans-serif;
+				font-size: 13px;
+				background-color: #f9f9f9;
+				color: #000000;
+			}
+		
+			* {
+				border-radius: 0 !important;
+			}
+		
+			header {
+				background-color: #0078d4;
+				color: white;
+				padding: 20px 0;
+				text-align: center;
+			}
+		
+			h1 {
+				margin: 0;
+				font-size: 2em;
+			}
+		
+			main {
+				padding: 20px;
+			}
+		
+			form {
+				margin-bottom: 20px;
+			}
+		
+			input[type="text"] {
+				padding: 10px;
+				font-size: 1em;
+				width: 300px;
+				margin-right: 10px;
+			}
+		
+			select {
+				padding: 10px;
+				font-size: 1em;
+				margin-right: 10px;
+			}
+		
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 20px;
+				background-color: #fff;
+				table-layout: auto;
+			}
+		
+			th,
+			td {
+				border: 1px solid #ddd;
+				padding: 10px;
+				text-align: left;
+				word-wrap: break-word;
+			}
+		
+			th {
+				background-color: #f2f2f2;
+				cursor: pointer;
+			}
+		
+			tr:nth-child(even) {
+				background-color: #f9f9f9;
+			}
+		
+			footer {
+				background-color: #f2f2f2;
+				padding: 10px 20px;
+				text-align: right;
+			}
+		
+			footer a {
+				color: #0078d4;
+				text-decoration: none;
+			}
+		
+			footer a:hover {
+				text-decoration: underline;
+			}
+		
+			[aria-live="polite"] {
+				display: none;
+			}
+		
+			th:nth-child(1),
+			td:nth-child(1) {
+				width: 50px;
+				text-align: center;
+			}
+		
+			th:nth-child(2),
+			td:nth-child(2) {
+				width: 50%;
+			}
+
+			th:nth-child(3),
+			td:nth-child(3) {
+			width: 150px;
+			}
+		
+			th:nth-child(4),
+			td:nth-child(4) {
+				width: 80px;
+				white-space: nowrap;
+			}
+		
+			th:nth-child(5),
+			td:nth-child(5) {
+				width: 120px;
+				text-align: center;
+				white-space: nowrap;
+			}
+		
+			.pagination {
+				margin: 20px 0;
+				text-align: center;
+			}
+		
+			.pagination button {
+				padding: 10px 15px;
+				margin: 0 5px;
+				border: 1px solid #ddd;
+				background-color: #fff;
+				cursor: pointer;
+			}
+		
+			.pagination button.active {
+				background-color: #0078d4;
+				color: white;
+			}
+
+			.hidden {
+			    display: none;
+			}
+
+
+
+		</style>
+		
+	<script>
+		let allRows = [];
+		let filteredRows = [];
+		const rowsPerPage = 100;
+		let currentPage = 1;
+
+		async function loadCSV() {
+			const response = await fetch('products.csv');
+			const data = await response.text();
+
+			// 改行コードを正規化し、空行を除外
+			const rows = data.replace(/\r/g, '').split('\n').slice(1).filter(row => row.trim() !== "");
+
+			// allRows にデータをセット
+			allRows = rows.map((row, index) => {
+				const regex = /"([^"]+)"|([^,]+)/g; // ダブルクォート対応の正規表現
+				const cols = [...row.matchAll(regex)].map(match => match[1] || match[2]); // マッチした値を取得
+
+				return {
+					index: index + 1,
+					name: cols[0],
+					platform: cols[1],
+					date: cols[2],
+					url: cols[3]?.trim(),
+				};
+			});
+
+			// フィルタリング用配列の初期化
+			filteredRows = [...allRows];
+
+			// 初期表示のセットアップ
+			setupPagination();
+			displayPage(1);
+
+			// 初期状態で件数を表示
+			const ariaLive = document.getElementById('aria-live-region');
+			if (ariaLive) {
+				ariaLive.textContent = `${filteredRows.length} 件の結果が表示されています。`;
+			}
+		}
+
+		function setupPagination() {
+			const pagination = document.querySelector('.pagination');
+			if (!pagination) {
+				console.error("Pagination 要素が見つかりません。");
+				return;
+			}
+
+			pagination.innerHTML = "";
+			const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+			for (let i = 1; i <= totalPages; i++) {
+				const button = document.createElement('button');
+				button.textContent = i;
+				button.className = i === currentPage ? 'active' : '';
+				button.addEventListener('click', () => {
+					displayPage(i);
+				});
+				pagination.appendChild(button);
+			}
+		}
+
+		function displayPage(page) {
+			currentPage = page;
+			const tableBody = document.querySelector('tbody');
+			if (!tableBody) {
+				console.error("テーブルの tbody 要素が見つかりません。");
+				return;
+			}
+
+			tableBody.innerHTML = "";
+
+			const startIndex = (page - 1) * rowsPerPage;
+			const endIndex = startIndex + rowsPerPage;
+			const rowsToDisplay = filteredRows.slice(startIndex, endIndex);
+
+			rowsToDisplay.forEach(row => {
+				const newRow = document.createElement('tr');
+				newRow.innerHTML = `
+					<td>${row.index}</td>
+					<td>${row.name}</td>
+					<td>${row.platform}</td>
+					<td>${row.date}</td>
+					<td><a href="${row.url}" download >ダウンロード</a></td>
+				`;
+				tableBody.appendChild(newRow);
+			});
+
+			// Update the pagination buttons
+			updatePaginationButtons();
+		}
+
+		function updatePaginationButtons() {
+			const pagination = document.querySelector('.pagination');
+			if (!pagination) {
+				console.error("Pagination 要素が見つかりません。");
+				return;
+			}
+
+			const buttons = pagination.querySelectorAll('button');
+			buttons.forEach((button, index) => {
+				if (index + 1 === currentPage) {
+					button.classList.add('active');
+				} else {
+					button.classList.remove('active');
+				}
+			});
+		}
+
+		function filterTable() {
+			const searchValue = document.getElementById('product-search').value.toLowerCase();
+			const platformValue = document.getElementById('platform-filter').value;
+
+			// 全データからフィルタリング
+			filteredRows = allRows.filter(row => {
+				const matchesSearch = row.name.toLowerCase().includes(searchValue);
+				const matchesPlatform = platformValue === "" || row.platform.includes(platformValue);
+				return matchesSearch && matchesPlatform;
+			});
+
+			// フィルタリング後の件数を表示
+			const ariaLive = document.getElementById('aria-live-region');
+			ariaLive.textContent = `${filteredRows.length} 件の結果が表示されています。`;
+
+			// ページネーションをセットアップしてから初期ページを表示
+			setupPagination();
+			displayPage(1);
+		}
+
+		function sortTable(column) {
+			const table = document.querySelector('table');
+			const isAscending = table.getAttribute('data-sort-order') === 'asc';
+
+			filteredRows.sort((a, b) => {
+				let valueA = a[column];
+				let valueB = b[column];
+
+				if (column === 'index') {
+					// 数値ソート
+					valueA = parseInt(valueA, 10);
+					valueB = parseInt(valueB, 10);
+					return isAscending ? valueA - valueB : valueB - valueA;
+				} else if (column === 'date') {
+					// 日付ソート
+					return isAscending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
+				} else {
+					// 文字列ソート
+					valueA = valueA?.toLowerCase() || '';
+					valueB = valueB?.toLowerCase() || '';
+					return isAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+				}
+			});
+
+			table.setAttribute('data-sort-order', isAscending ? 'desc' : 'asc');
+
+			displayPage(1);
+			setupPagination();
+		}
+
+		// ページ読み込み時にデータをロード
+		document.addEventListener('DOMContentLoaded', loadCSV);
+
+	</script>
 </head>
+
 <body>
-  <h1>GitHub Pages Test</h1>
-  <a href="https://github.com/jpable/vpatj-test/releases/download/2026-06-24/AAD_End_User_Experiences_-_My_Account_My_Staff_My_Groups_Android_Web_iOS_VPATJ00270.xlsx">
-    download test1
-  </a>
-  <br>
-  <a href="https://github.com/jpable/vpatj-test/releases/download/2026-06-24/NET_Framework_4.8.1_Windows_Forms_and_WPF_Win32_VPATJ00090.xlsx">
-    download test2
-  </a>
-  <br>
-  <a href="file/Accessibility_Insights_for_Web_VPATJ00360.xlsx" download>
-    download test3
-  </a>
+	<header>
+		<h1>日本版VPAT資料一覧</h1>
+	</header>
+	<main>
+		<p>このページでは、米国本社の提供するConformance Reportsを元に作成したマイクロソフト製品の日本版VPAT（Voluntary Product Accessibility Template）資料を格納しています。</p>
+		<form onsubmit="event.preventDefault(); filterTable();">
+			<label for="product-search">製品名検索（部分一致）:</label>
+			<input type="text" id="product-search" name="product-search" placeholder="製品名を入力" oninput="filterTable()">
+			<label for="platform-filter">プラットフォーム:</label>
+			<select id="platform-filter" onchange="filterTable()">
+				<option value="">すべて</option>
+				<option value="Win32">Win32</option>
+				<option value="Azure">Azure</option>
+				<option value="Xbox">Xbox</option>
+				<option value="Hardware">Hardware</option>
+				<option value="Android">Android</option>
+				<option value="iOS">iOS</option>
+				<option value="Linux">Linux</option>
+				<option value="Mac">Mac</option>
+				<option value="Web">Web</option>
+			</select>
+
+		</form>
+		<div id="aria-live-region" aria-live="polite">0 件の結果が表示されています。</div>
+		<table data-sort-order="asc">
+			<thead>
+				<tr>
+					<th onclick="sortTable('index')">No.</th>
+					<th onclick="sortTable('name')">製品名</th>
+					<th onclick="sortTable('platform')">プラットフォーム</th>
+					<th onclick="sortTable('date')">作成日</th>
+					<th>ダウンロード</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		<div class="pagination"></div>
+	</main>
+	<footer>
+		<a href="https://www.microsoft.com/ja-jp/enable/microsoft/standards">アクセシビリティ サイトへ戻る</a>
+	</footer>
 </body>
+
 </html>
