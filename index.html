@@ -8,159 +8,152 @@
 	<title>
 		日本版 VPAT 資料
 	</title>
-	<link rel="shortcut icon" href="https://appservice.azureedge.net/images/app-service/v4/favicon.ico"
-		type="image/x-icon" />
-	<link href="https://appservice.azureedge.net/css/app-service/v4/bootstrap.min.css" rel="stylesheet"
-		crossorigin="anonymous" />
+	<link rel="icon" href="file/favicon.ico">	
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+			font-size: 13px;
+			background-color: #f9f9f9;
+			color: #000000;
+		}
+	
+		* {
+			border-radius: 0 !important;
+		}
+	
+		header {
+			background-color: #0078d4;
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+	
+		h1 {
+			margin: 0;
+			font-size: 2em;
+		}
+	
+		main {
+			padding: 20px;
+		}
+	
+		form {
+			margin-bottom: 20px;
+		}
+	
+		input[type="text"] {
+			padding: 10px;
+			font-size: 1em;
+			width: 300px;
+			margin-right: 10px;
+		}
+	
+		select {
+			padding: 10px;
+			font-size: 1em;
+			margin-right: 10px;
+		}
+	
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+			background-color: #fff;
+			table-layout: auto;
+		}
+	
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 10px;
+			text-align: left;
+			word-wrap: break-word;
+		}
+	
+		th {
+			background-color: #f2f2f2;
+			cursor: pointer;
+		}
+	
+		tr:nth-child(even) {
+			background-color: #f9f9f9;
+		}
+	
+		footer {
+			background-color: #f2f2f2;
+			padding: 10px 20px;
+			text-align: right;
+		}
+	
+		footer a {
+			color: #0078d4;
+			text-decoration: none;
+		}
+	
+		footer a:hover {
+			text-decoration: underline;
+		}
+	
+		[aria-live="polite"] {
+			display: none;
+		}
+	
+		th:nth-child(1),
+		td:nth-child(1) {
+			width: 50px;
+			text-align: center;
+		}
+	
+		th:nth-child(2),
+		td:nth-child(2) {
+			width: 50%;
+		}
 
-		<style>
-			html,
-			body {
-				height: 100%;
-				margin: 0;
-				padding: 0;
-				font-family: Arial, sans-serif;
-				font-size: 13px;
-				background-color: #f9f9f9;
-				color: #000000;
-			}
-		
-			* {
-				border-radius: 0 !important;
-			}
-		
-			header {
-				background-color: #0078d4;
-				color: white;
-				padding: 20px 0;
-				text-align: center;
-			}
-		
-			h1 {
-				margin: 0;
-				font-size: 2em;
-			}
-		
-			main {
-				padding: 20px;
-			}
-		
-			form {
-				margin-bottom: 20px;
-			}
-		
-			input[type="text"] {
-				padding: 10px;
-				font-size: 1em;
-				width: 300px;
-				margin-right: 10px;
-			}
-		
-			select {
-				padding: 10px;
-				font-size: 1em;
-				margin-right: 10px;
-			}
-		
-			table {
-				width: 100%;
-				border-collapse: collapse;
-				margin-top: 20px;
-				background-color: #fff;
-				table-layout: auto;
-			}
-		
-			th,
-			td {
-				border: 1px solid #ddd;
-				padding: 10px;
-				text-align: left;
-				word-wrap: break-word;
-			}
-		
-			th {
-				background-color: #f2f2f2;
-				cursor: pointer;
-			}
-		
-			tr:nth-child(even) {
-				background-color: #f9f9f9;
-			}
-		
-			footer {
-				background-color: #f2f2f2;
-				padding: 10px 20px;
-				text-align: right;
-			}
-		
-			footer a {
-				color: #0078d4;
-				text-decoration: none;
-			}
-		
-			footer a:hover {
-				text-decoration: underline;
-			}
-		
-			[aria-live="polite"] {
-				display: none;
-			}
-		
-			th:nth-child(1),
-			td:nth-child(1) {
-				width: 50px;
-				text-align: center;
-			}
-		
-			th:nth-child(2),
-			td:nth-child(2) {
-				width: 50%;
-			}
+		th:nth-child(3),
+		td:nth-child(3) {
+		width: 150px;
+		}
+	
+		th:nth-child(4),
+		td:nth-child(4) {
+			width: 80px;
+			white-space: nowrap;
+		}
+	
+		th:nth-child(5),
+		td:nth-child(5) {
+			width: 120px;
+			text-align: center;
+			white-space: nowrap;
+		}
+	
+		.pagination {
+			margin: 20px 0;
+			text-align: center;
+		}
+	
+		.pagination button {
+			padding: 10px 15px;
+			margin: 0 5px;
+			border: 1px solid #ddd;
+			background-color: #fff;
+			cursor: pointer;
+		}
+	
+		.pagination button.active {
+			background-color: #0078d4;
+			color: white;
+		}
 
-			th:nth-child(3),
-			td:nth-child(3) {
-			width: 150px;
-			}
-		
-			th:nth-child(4),
-			td:nth-child(4) {
-				width: 80px;
-				white-space: nowrap;
-			}
-		
-			th:nth-child(5),
-			td:nth-child(5) {
-				width: 120px;
-				text-align: center;
-				white-space: nowrap;
-			}
-		
-			.pagination {
-				margin: 20px 0;
-				text-align: center;
-			}
-		
-			.pagination button {
-				padding: 10px 15px;
-				margin: 0 5px;
-				border: 1px solid #ddd;
-				background-color: #fff;
-				cursor: pointer;
-			}
-		
-			.pagination button.active {
-				background-color: #0078d4;
-				color: white;
-			}
+		.hidden {
+			display: none;
+		}
 
-			.hidden {
-			    display: none;
-			}
-
-
-
-		</style>
-		
+	</style>		
 	<script>
 		let allRows = [];
 		let filteredRows = [];
